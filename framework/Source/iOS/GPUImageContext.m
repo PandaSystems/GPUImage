@@ -1,6 +1,7 @@
 #import "GPUImageContext.h"
 #import <OpenGLES/EAGLDrawable.h>
 #import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 
 #define MAXSHADERPROGRAMSALLOWEDINCACHE 40
 
@@ -262,7 +263,14 @@ static void *openGLESContextQueueKey;
     
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-pointer-compare"
-    return (CVOpenGLESTextureCacheCreate != NULL);
+    BOOL needsWorkaround = [[[UIDevice currentDevice] systemVersion] compare:@"8.3" options:NSNumericSearch] == NSOrderedSame;
+    if (needsWorkaround) {
+        // workaround is needed to prevent crashing on 8.3 devices on CVOpenGLESTextureCacheCreateTextureFromImage call
+        // according to https://github.com/BradLarson/GPUImage/issues/2041
+        return NO;
+    } else {
+        return (CVOpenGLESTextureCacheCreate != NULL);
+    }
 #pragma clang diagnostic pop
 
 #endif
