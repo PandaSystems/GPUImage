@@ -329,6 +329,13 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
             NSUInteger paddedWidthOfImage = CVPixelBufferGetBytesPerRow(renderTarget) / 4.0;
             NSUInteger paddedBytesForImage = paddedWidthOfImage * (int)_size.height * 4;
             
+            //Stub for CTI-1319
+            UIApplicationState state = [[UIApplication sharedApplication] applicationState];
+            while (state == UIApplicationStateBackground) {
+                [NSThread sleepForTimeInterval:0.1];
+                state = [[UIApplication sharedApplication] applicationState];
+            }
+            
             glFinish();
             CFRetain(renderTarget); // I need to retain the pixel buffer here and release in the data source callback to prevent its bytes from being prematurely deallocated during a photo write operation
             [self lockForReading];
