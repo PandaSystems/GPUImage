@@ -143,13 +143,14 @@ void reportAvailableMemoryForGPUImage(NSString *tag)
     usingNextFrameForImageCapture = NO;
     
     // set default texture options
-    _outputTextureOptions.minFilter = GL_LINEAR;
-    _outputTextureOptions.magFilter = GL_LINEAR;
+    _outputTextureOptions.minFilter = GL_NEAREST;
+    _outputTextureOptions.magFilter = GL_NEAREST;
     _outputTextureOptions.wrapS = GL_CLAMP_TO_EDGE;
     _outputTextureOptions.wrapT = GL_CLAMP_TO_EDGE;
     _outputTextureOptions.internalFormat = GL_RGBA;
     _outputTextureOptions.format = GL_BGRA;
-    _outputTextureOptions.type = GL_UNSIGNED_BYTE;
+    _outputTextureOptions.type = GL_HALF_FLOAT_OES;
+//    _outputTextureOptions.type = GL_UNSIGNED_BYTE;
 
     return self;
 }

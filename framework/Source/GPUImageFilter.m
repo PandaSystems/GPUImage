@@ -299,7 +299,13 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
     
     [GPUImageContext setActiveShaderProgram:filterProgram];
 
+    GLenum inputType = firstInputFramebuffer.textureOptions.type;
+    GLenum inputMinFilter = firstInputFramebuffer.textureOptions.minFilter;
+
     outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:[self sizeOfFBO] textureOptions:self.outputTextureOptions onlyTexture:NO];
+    GLenum outputType = outputFramebuffer.textureOptions.type;
+    GLenum outputMinFilter = outputFramebuffer.textureOptions.minFilter;
+
     [outputFramebuffer activateFramebuffer];
     if (usingNextFrameForImageCapture)
     {
@@ -566,7 +572,20 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
     
     [self renderToTextureWithVertices:imageVertices textureCoordinates:[[self class] textureCoordinatesForRotation:inputRotation]];
 
-    [self informTargetsAboutNewFrameAtTime:frameTime];
+    self.isReadyToNotifyTargets = YES;
+    self.cmtime = frameTime;
+    if (!self.isNotAutoinform) {
+        [self informTargetsAboutNewFrameAtTime:frameTime];
+    }
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0/30.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        runAsynchronouslyOnVideoProcessingQueue(^{
+//            [self informTargetsAboutNewFrameAtTime:frameTime];
+//        });
+//    });
+}
+
+- (void) informTargets {
+    [self informTargetsAboutNewFrameAtTime:kCMTimeIndefinite];
 }
 
 - (NSInteger)nextAvailableTextureIndex;

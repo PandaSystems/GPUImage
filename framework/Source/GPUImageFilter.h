@@ -69,6 +69,13 @@ typedef struct GPUMatrix3x3 GPUMatrix3x3;
 @property(readwrite, nonatomic) BOOL preventRendering;
 @property(readwrite, nonatomic) BOOL currentlyReceivingMonochromeInput;
 
+@property(readwrite, nonatomic) BOOL isNotAutoinform;
+@property(readwrite, nonatomic) BOOL isReadyToNotifyTargets;
+@property(readwrite, nonatomic) BOOL isAllowedToNotifyTargets;
+@property(readwrite, nonatomic) CMTime cmtime;
+
+- (void) informTargets;
+
 /// @name Initialization and teardown
 
 /**

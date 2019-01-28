@@ -69,13 +69,14 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
     }
 
     GPUTextureOptions defaultTextureOptions;
-    defaultTextureOptions.minFilter = GL_LINEAR;
-    defaultTextureOptions.magFilter = GL_LINEAR;
+    defaultTextureOptions.minFilter = GL_NEAREST;
+    defaultTextureOptions.magFilter = GL_NEAREST;
     defaultTextureOptions.wrapS = GL_CLAMP_TO_EDGE;
     defaultTextureOptions.wrapT = GL_CLAMP_TO_EDGE;
     defaultTextureOptions.internalFormat = GL_RGBA;
     defaultTextureOptions.format = GL_BGRA;
-    defaultTextureOptions.type = GL_UNSIGNED_BYTE;
+    defaultTextureOptions.type = GL_HALF_FLOAT_OES;
+//    defaultTextureOptions.type = GL_UNSIGNED_BYTE;
 
     _textureOptions = defaultTextureOptions;
     _size = framebufferSize;
@@ -90,13 +91,14 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
 - (id)initWithSize:(CGSize)framebufferSize;
 {
     GPUTextureOptions defaultTextureOptions;
-    defaultTextureOptions.minFilter = GL_LINEAR;
-    defaultTextureOptions.magFilter = GL_LINEAR;
+    defaultTextureOptions.minFilter = GL_NEAREST;
+    defaultTextureOptions.magFilter = GL_NEAREST;
     defaultTextureOptions.wrapS = GL_CLAMP_TO_EDGE;
     defaultTextureOptions.wrapT = GL_CLAMP_TO_EDGE;
     defaultTextureOptions.internalFormat = GL_RGBA;
     defaultTextureOptions.format = GL_BGRA;
-    defaultTextureOptions.type = GL_UNSIGNED_BYTE;
+    defaultTextureOptions.type = GL_HALF_FLOAT_OES;
+//    defaultTextureOptions.type = GL_UNSIGNED_BYTE;
 
     if (!(self = [self initWithSize:framebufferSize textureOptions:defaultTextureOptions onlyTexture:NO]))
     {
@@ -136,8 +138,10 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
         glGenFramebuffers(1, &framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         
+        uint8_t* string =  glGetString(GL_EXTENSIONS);
+        
         // By default, all framebuffers on iOS 5.0+ devices are backed by texture caches, using one shared cache
-        if ([GPUImageContext supportsFastTextureUpload])
+        if (NO)
         {
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
             CVOpenGLESTextureCacheRef coreVideoTextureCache = [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache];
@@ -149,7 +153,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
             attrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
             CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
             
-            CVReturn err = CVPixelBufferCreate(kCFAllocatorDefault, (int)_size.width, (int)_size.height, kCVPixelFormatType_32BGRA, attrs, &renderTarget);
+            CVReturn err = CVPixelBufferCreate(kCFAllocatorDefault, (int)_size.width, (int)_size.height, kCVPixelFormatType_TwoComponent32Float, attrs, &renderTarget);
             if (err)
             {
                 NSLog(@"FBO size: %f, %f", _size.width, _size.height);
@@ -189,6 +193,8 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
             glBindTexture(GL_TEXTURE_2D, _texture);
             
             glTexImage2D(GL_TEXTURE_2D, 0, _textureOptions.internalFormat, (int)_size.width, (int)_size.height, 0, _textureOptions.format, _textureOptions.type, 0);
+//            glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, (GLsizei)width, (GLsizei)height, 0, GL_LUMINANCE, GL_FLOAT, spriteData);
+
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0);
         }
         

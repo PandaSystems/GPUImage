@@ -127,14 +127,15 @@
 - (GPUImageFramebuffer *)fetchFramebufferForSize:(CGSize)framebufferSize onlyTexture:(BOOL)onlyTexture;
 {
     GPUTextureOptions defaultTextureOptions;
-    defaultTextureOptions.minFilter = GL_LINEAR;
-    defaultTextureOptions.magFilter = GL_LINEAR;
+    defaultTextureOptions.minFilter = GL_NEAREST;
+    defaultTextureOptions.magFilter = GL_NEAREST;
     defaultTextureOptions.wrapS = GL_CLAMP_TO_EDGE;
     defaultTextureOptions.wrapT = GL_CLAMP_TO_EDGE;
     defaultTextureOptions.internalFormat = GL_RGBA;
     defaultTextureOptions.format = GL_BGRA;
-    defaultTextureOptions.type = GL_UNSIGNED_BYTE;
-    
+    defaultTextureOptions.type = GL_HALF_FLOAT_OES;
+//    defaultTextureOptions.type = GL_UNSIGNED_BYTE;
+
     return [self fetchFramebufferForSize:framebufferSize textureOptions:defaultTextureOptions onlyTexture:onlyTexture];
 }
 
