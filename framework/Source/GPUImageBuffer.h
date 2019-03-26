@@ -7,4 +7,6 @@
 
 @property(readwrite, nonatomic) NSUInteger bufferSize;
 
+- (NSMutableArray*) bufferedFramebuffers;
+
 @end

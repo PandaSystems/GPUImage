@@ -100,7 +100,7 @@
 {
     [GPUImageContext setActiveShaderProgram:dataProgram];
 
-    outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:imageSize onlyTexture:NO];
+    outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:imageSize textureOptions:[self outputTextureOptions] onlyTexture:NO];
     [outputFramebuffer activateFramebuffer];
 
     if(lockNextFramebuffer)
@@ -302,6 +302,18 @@
     [retainedFramebuffer unlockAfterReading];
     [retainedFramebuffer unlock];
     retainedFramebuffer = nil;
+}
+
+- (GPUTextureOptions) outputTextureOptions {
+    GPUTextureOptions options;
+    options.minFilter = GL_LINEAR;
+    options.magFilter = GL_LINEAR;
+    options.wrapS = GL_CLAMP_TO_EDGE;
+    options.wrapT = GL_CLAMP_TO_EDGE;
+    options.internalFormat = GL_RGBA;
+    options.format = GL_BGRA;
+    options.type = GL_UNSIGNED_BYTE;
+    return options;
 }
 
 @end

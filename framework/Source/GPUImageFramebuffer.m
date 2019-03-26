@@ -141,7 +141,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
         uint8_t* string =  glGetString(GL_EXTENSIONS);
         
         // By default, all framebuffers on iOS 5.0+ devices are backed by texture caches, using one shared cache
-        if (NO)
+        if ([GPUImageContext supportsFastTextureUpload])
         {
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
             CVOpenGLESTextureCacheRef coreVideoTextureCache = [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache];
@@ -153,7 +153,11 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
             attrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
             CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
             
-            CVReturn err = CVPixelBufferCreate(kCFAllocatorDefault, (int)_size.width, (int)_size.height, kCVPixelFormatType_TwoComponent32Float, attrs, &renderTarget);
+            OSType type = kCVPixelFormatType_32BGRA;
+            if (self.textureOptions.type == GL_HALF_FLOAT_OES) {
+                type = kCVPixelFormatType_64RGBAHalf;
+            }
+            CVReturn err = CVPixelBufferCreate(kCFAllocatorDefault, (int)_size.width, (int)_size.height, type, attrs, &renderTarget);
             if (err)
             {
                 NSLog(@"FBO size: %f, %f", _size.width, _size.height);

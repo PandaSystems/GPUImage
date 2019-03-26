@@ -109,4 +109,8 @@
   _bufferSize = newValue;
 }
 
+- (NSMutableArray*) bufferedFramebuffers {
+    return bufferedFramebuffers;
+}
+
 @end
